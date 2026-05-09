@@ -1,0 +1,21 @@
+{
+  "name": "sanjeevani-dental-clinic",
+  "version": "1.0.0",
+  "description": "Sanjeevani Dental Clinic - Dimapur",
+  "scripts": {
+    "dev": "npx serve .",
+    "build": "echo 'Static HTML site - no build needed'",
+    "lint": "echo 'No linter configured'",
+    "test": "echo 'No tests configured'"
+  },
+  "keywords": [
+    "dental",
+    "clinic",
+    "healthcare"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@vercel/speed-insights": "^1.0.12"
+  }
+}
