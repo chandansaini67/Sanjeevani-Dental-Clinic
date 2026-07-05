@@ -1,0 +1,45 @@
+# Sanjeevani Dental Clinic
+
+> A women-owned dental clinic in Dimapur, Nagaland, India, serving families for over 15 years.
+> Rated 4.8/5 on Google (33+ reviews). Four specialist doctors offer general dentistry, root
+> canals, crowns, dental implants, braces and clear aligners, teeth whitening, wisdom tooth
+> extraction, kids' dentistry and same-day emergency care. Open Monday to Saturday, 9 AM to 5 PM.
+
+## Key facts
+- Name: Sanjeevani Dental Clinic
+- Address: Jain Temple Road, near Ram Janki School, West Yard Colony, Marwari Patti, Dimapur, Nagaland 797112, India
+- Phone / WhatsApp: +91 70053 78195
+- Email: sanjeevanidentaldimapur@gmail.com
+- Hours: Monday–Saturday 9:00 AM – 5:00 PM; closed Sunday
+- Booking: WhatsApp-first (https://wa.me/917005378195)
+- Google rating: 4.8 out of 5, 33+ reviews
+
+## Doctors
+- Dr. Deepika Jain — Dental Surgeon (general & cosmetic dentistry, root canals)
+- Dr. Kivibo Awomi — Dental Surgeon (restorative & preventive care)
+- Dr. Anovili Chishi — Oral Surgeon (extractions, wisdom teeth, minor surgery)
+- Dr. Tisso — Orthodontist (braces & clear aligners)
+
+## Indicative prices (INR, confirmed in writing after examination)
+- Consultation & check-up: 200–500
+- Teeth cleaning: 800–1,500
+- Teeth whitening: 4,000–8,000
+- Root canal treatment: 3,000–6,000 per tooth
+- Crowns: 1,500–12,000 per unit (metal to zirconia)
+- Wisdom tooth extraction: 1,500–6,000
+- Dental implants: 25,000–45,000 per tooth
+- Braces & aligners: 25,000–1,50,000 full treatment
+- Kids' dentistry: 200–3,500
+- Emergency consultation: 300–800
+
+## Key pages
+- Home: https://sanjeevani-dental-clinic.vercel.app/
+- Treatments & prices: https://sanjeevani-dental-clinic.vercel.app/services/
+- 3D Smile Studio (interactive): https://sanjeevani-dental-clinic.vercel.app/smile-studio/
+- Doctors: https://sanjeevani-dental-clinic.vercel.app/doctors/
+- Blog: https://sanjeevani-dental-clinic.vercel.app/blog/
+- Contact & directions: https://sanjeevani-dental-clinic.vercel.app/contact/
+- FAQs: https://sanjeevani-dental-clinic.vercel.app/faq/
+
+## Service area
+Dimapur, Chumukedima, Kohima, and across Nagaland.
