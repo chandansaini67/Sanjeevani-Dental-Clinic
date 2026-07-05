@@ -83,7 +83,7 @@ JSON-LD (Google self-serving review policy).
 | /contact/ | dental clinic near Ram Janki School Dimapur |
 | /faq/ | dental questions answers Dimapur |
 
-## PRICES — **DRAFT, AWAITING OWNER CONFIRMATION** (merge-to-master blocker)
+## PRICES — **CONFIRMED BY OWNER 2026-07-05** (approved for launch as-is; owner may adjust anytime)
 
 | Service | Draft range (₹) | Notes shown on site |
 |---|---|---|
