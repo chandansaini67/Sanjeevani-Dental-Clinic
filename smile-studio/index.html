@@ -46,7 +46,6 @@
     }
   }
   </script>
-  <script type="module" src="/assets/js/smile/main.js"></script>
   <!-- ==HEAD-SHARED== -->
 <meta name="theme-color" content="#1d5fd8" />
 <link rel="preload" href="/assets/fonts/playfair-display-700.woff2" as="font" type="font/woff2" crossorigin />
@@ -60,6 +59,8 @@
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" integrity="sha512-onMTRKJBKz8M1TnqqDuGBlowlH0ohFzMXYRNebz+yOcc5TQr/zAKsthzhuv0hiyUKEiQEQXEynnXCvNTOk50dg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script defer src="/assets/js/main.js"></script>
 <!-- ==/HEAD-SHARED== -->
+  <!-- 3D module loads AFTER the shared GSAP defer scripts above, so window.gsap exists -->
+  <script type="module" src="/assets/js/smile/main.js"></script>
 </head>
 <body data-page="smile-studio">
   <!-- ==HEADER== -->

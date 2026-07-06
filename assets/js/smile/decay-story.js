@@ -87,7 +87,10 @@ export function createDecayStory(THREE_, { stage, canvas, chapters, progressEl, 
     dirty = true;
   }
 
+  let activeChapter = -1;
   function setChapter(idx) {
+    if (idx === activeChapter) return; // idempotent — cheap to call every scroll tick
+    activeChapter = idx;
     chapters.forEach((c, i) => c.classList.toggle("active", i === idx));
     if (progressEl) progressEl.querySelectorAll("span").forEach((s, i) => s.classList.toggle("on", i <= idx));
   }
@@ -100,48 +103,66 @@ export function createDecayStory(THREE_, { stage, canvas, chapters, progressEl, 
     requestAnimationFrame(render);
   }
 
+  // Local 0→1 ramp for a sub-range of the overall scroll progress.
+  const band = (p, a, b) => Math.max(0, Math.min(1, (p - a) / (b - a)));
+
+  // ALL scene state is a pure function of scroll progress p (0..1) — scrub-safe in both
+  // directions, and correct even if the page is reloaded mid-section.
+  function applyProgress(p) {
+    const cavity = band(p, 0.25, 0.5);   // chapter 2
+    const rct = band(p, 0.5, 0.8);       // chapter 3
+    const crown = band(p, 0.8, 1.0);     // chapter 4
+    state.rot = p * Math.PI * 0.9;
+    state.decay = cavity;
+    state.dull = cavity;
+    // chapter 3: clip sweeps open (1.2→-0.2), pulp cleaned (red→grey), gutta fills bottom-up
+    state.clip = crown > 0 ? -0.2 + crown * 1.4 : 1.2 - band(p, 0.5, 0.62) * 1.4;
+    state.pulpRed = 1 - band(p, 0.58, 0.72);
+    state.guttaFill = band(p, 0.68, 0.8);
+    // chapter 4: crown descends and gives a brief mint glow pulse
+    state.crownY = 4 - crown * 4;
+    state.crownGlow = crown < 0.7 ? crown * 0.6 : Math.max(0.15, 0.6 - (crown - 0.7) * 1.5);
+    apply();
+    // derive chapter from thresholds — captions/dots always match, both scroll directions
+    setChapter(p < 0.25 ? 0 : p < 0.5 ? 1 : p < 0.8 ? 2 : 3);
+  }
+
   resize();
   window.addEventListener("resize", resize);
-  apply();
+  applyProgress(0);
   renderer.render(scene, camera);
   requestAnimationFrame(render);
 
   if (reducedMotion || !gsap || !ScrollTrigger) {
-    // static: show healthy tooth, first chapter, and let CSS step list carry the story
+    // static: healthy tooth + first chapter; the CSS step list carries the story
     setChapter(0);
     return { setRunning(v) { running = v; if (v) dirty = true; }, resize };
   }
 
-  // Build the scrubbed timeline
-  const tl = gsap.timeline({
-    scrollTrigger: {
-      trigger: stage.closest("[data-story-trigger]") || stage,
-      start: "top top",
-      end: "+=320%",
-      scrub: 1,
-      pin: stage.closest(".story-stage-col") || stage,
-      anticipatePin: 1,
-      onUpdate: () => {},
-    },
+  const st = ScrollTrigger.create({
+    trigger: stage.closest("[data-story-trigger]") || stage,
+    start: "top top",
+    end: "+=320%",
+    scrub: 1,
+    pin: stage.closest(".story-stage-col") || stage,
+    anticipatePin: 1,
+    invalidateOnRefresh: true,
+    onUpdate: (self) => applyProgress(self.progress),
+    onRefresh: (self) => applyProgress(self.progress),
   });
-  tl.eventCallback("onUpdate", apply);
 
-  // Chapter 1: healthy show-off rotation
-  tl.to(state, { rot: Math.PI * 0.5, duration: 1, onStart: () => setChapter(0), onReverseComplete: () => setChapter(0) });
-  // Chapter 2: cavity forms
-  tl.to(state, { decay: 1, dull: 1, rot: Math.PI * 0.8, duration: 1, onStart: () => setChapter(1) });
-  // Chapter 3: root canal — clip open, clean pulp, fill gutta
-  tl.addLabel("rct").to(state, { clip: -0.2, duration: 0.5, onStart: () => setChapter(2) })
-    .to(state, { pulpRed: 0, duration: 0.5 })
-    .to(state, { guttaFill: 1, duration: 0.6 });
-  // Chapter 4: crown descends + glow
-  tl.to(state, { clip: 1.2, duration: 0.4, onStart: () => setChapter(3) })
-    .to(state, { crownY: 0, duration: 0.6 })
-    .to(state, { crownGlow: 0.6, duration: 0.3 })
-    .to(state, { crownGlow: 0.15, duration: 0.3 });
+  // The stage lazy-inits after load, so the pin was measured against a pre-ready layout —
+  // recalc once the next frame, and on debounced resize.
+  requestAnimationFrame(() => ScrollTrigger.refresh());
+  let rt;
+  window.addEventListener("resize", () => {
+    clearTimeout(rt);
+    rt = setTimeout(() => ScrollTrigger.refresh(), 200);
+  });
 
   return {
     setRunning(v) { running = v; if (v) dirty = true; },
     resize,
+    destroy() { st && st.kill(); },
   };
 }

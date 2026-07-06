@@ -32,14 +32,6 @@ if (saveData || !webglOK()) {
 }
 
 function setup() {
-  const gsap = window.gsap;
-  const ScrollTrigger = window.ScrollTrigger;
-  if (gsap && ScrollTrigger) {
-    try {
-      gsap.registerPlugin(ScrollTrigger);
-    } catch (e) {}
-  }
-
   // Register each stage's observer immediately — no waiting on CDN.
   lazyStage("#stage-explorer", async (THREE, stage) => {
     const { createArchExplorer } = await import("./arch-explorer.js");
@@ -52,6 +44,15 @@ function setup() {
   });
 
   lazyStage("#stage-story", async (THREE, stage) => {
+    // Read GSAP at intersection time — guaranteed present by then (scroll happens well
+    // after the deferred GSAP scripts run), independent of head script ordering.
+    const gsap = window.gsap;
+    const ScrollTrigger = window.ScrollTrigger;
+    if (gsap && ScrollTrigger) {
+      try {
+        gsap.registerPlugin(ScrollTrigger);
+      } catch (e) {}
+    }
     const { createDecayStory } = await import("./decay-story.js");
     return createDecayStory(THREE, {
       stage,
