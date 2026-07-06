@@ -1,0 +1,19 @@
+3D model: assets/models/smile-arch.glb
+
+Derived from BodyParts3D anatomical tooth meshes (14 upper permanent teeth).
+Source: BodyParts3D / Anatomography, The Database Center for Life Science (DBCLS),
+via the mirror https://github.com/Kevin-Mattheus-Moerman/BodyParts3D
+
+Attribution (required):
+  "BodyParts3D, © The Database Center for Life Science licensed under
+   CC Attribution-Share Alike 2.1 Japan"
+License: Creative Commons Attribution-ShareAlike 2.1 Japan (CC BY-SA 2.1 JP)
+  https://creativecommons.org/licenses/by-sa/2.1/jp/deed.en
+
+Processing (offline): individual tooth STLs were welded, normalized with one shared
+matrix (preserving the anatomical arch), decimated (meshopt), and combined into one
+meshopt-compressed GLB with per-tooth named nodes (t11–t27). The BodyParts3D gingiva
+mesh was not used; the gum ridge on the site is generated procedurally.
+
+Because CC BY-SA is share-alike, this derived GLB is likewise offered under
+CC Attribution-Share Alike 2.1 Japan.
