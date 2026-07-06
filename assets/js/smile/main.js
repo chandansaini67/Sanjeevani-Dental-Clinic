@@ -25,6 +25,26 @@ function loadThree() {
   return threePromise;
 }
 
+// Shared, memoized loader for the real anatomical arch GLB (14 named teeth t11–t27).
+// Returns the parsed gltf.scene; each experience clones the nodes it needs.
+let modelsPromise = null;
+function loadModels(THREE) {
+  if (!modelsPromise) {
+    modelsPromise = Promise.all([
+      import("three/addons/loaders/GLTFLoader.js"),
+      import("three/addons/libs/meshopt_decoder.module.js"),
+    ]).then(
+      ([{ GLTFLoader }, { MeshoptDecoder }]) =>
+        new Promise((resolve, reject) => {
+          new GLTFLoader()
+            .setMeshoptDecoder(MeshoptDecoder)
+            .load("/assets/models/smile-arch.glb", (gltf) => resolve(gltf.scene), undefined, reject);
+        })
+    );
+  }
+  return modelsPromise;
+}
+
 if (saveData || !webglOK()) {
   fail();
 } else {
@@ -34,12 +54,16 @@ if (saveData || !webglOK()) {
 function setup() {
   // Register each stage's observer immediately — no waiting on CDN.
   lazyStage("#stage-explorer", async (THREE, stage) => {
-    const { createArchExplorer } = await import("./arch-explorer.js");
+    const [{ createArchExplorer }, models] = await Promise.all([
+      import("./arch-explorer.js"),
+      loadModels(THREE),
+    ]);
     return createArchExplorer(THREE, {
       stage,
       canvas: stage.querySelector("canvas"),
       infoEl: document.getElementById("tooth-info"),
       selectEl: document.getElementById("tooth-select"),
+      models,
     });
   });
 
@@ -53,7 +77,10 @@ function setup() {
         gsap.registerPlugin(ScrollTrigger);
       } catch (e) {}
     }
-    const { createDecayStory } = await import("./decay-story.js");
+    const [{ createDecayStory }, models] = await Promise.all([
+      import("./decay-story.js"),
+      loadModels(THREE),
+    ]);
     return createDecayStory(THREE, {
       stage,
       canvas: stage.querySelector("canvas"),
@@ -62,15 +89,20 @@ function setup() {
       gsap,
       ScrollTrigger,
       reducedMotion,
+      models,
     });
   });
 
   lazyStage("#stage-braces", async (THREE, stage) => {
-    const { createBracesMorph } = await import("./braces-morph.js");
+    const [{ createBracesMorph }, models] = await Promise.all([
+      import("./braces-morph.js"),
+      loadModels(THREE),
+    ]);
     return createBracesMorph(THREE, {
       stage,
       canvas: stage.querySelector("canvas"),
       range: document.getElementById("braces-range"),
+      models,
     });
   });
 }

@@ -1,85 +1,49 @@
-// Tooth reference data for the arch explorer info cards.
-// Order matches the 10 anterior/premolar teeth built by the arch (patient's view, right→left).
+// Info-card data for the 14 upper teeth in the real arch GLB, keyed by FDI node name.
+// Grouped by tooth type; the arch explorer looks up by the GLB node's name (t11–t27).
 
-export const TEETH = [
-  {
-    id: "molar-r",
-    name: "Upper right molar",
-    role: "Molar",
-    does: "Grinds and crushes food with its broad, cusped surface.",
-    problems: ["Deep pit-and-fissure cavities", "Cracks from hard chewing", "Impacted or painful wisdom molars"],
-    treatments: [["Root canal", "/services/root-canal-treatment/"], ["Crown", "/services/crowns-bridges/"], ["Extraction", "/services/wisdom-tooth-extraction/"]],
-  },
-  {
-    id: "premolar2-r",
-    name: "Upper right second premolar",
-    role: "Premolar",
-    does: "Tears and crushes food; bridges the canine and molars.",
-    problems: ["Cavities between teeth", "Old fillings that fail", "Sensitivity"],
-    treatments: [["Cleaning & check-up", "/services/teeth-cleaning-checkup/"], ["Crown", "/services/crowns-bridges/"]],
-  },
-  {
-    id: "premolar1-r",
-    name: "Upper right first premolar",
-    role: "Premolar",
-    does: "Helps tear food and supports the shape of your smile.",
-    problems: ["Cavities", "Crowding needing braces", "Wear from grinding"],
-    treatments: [["Braces & aligners", "/services/braces-aligners/"], ["Cleaning & check-up", "/services/teeth-cleaning-checkup/"]],
-  },
-  {
-    id: "canine-r",
-    name: "Upper right canine",
-    role: "Canine",
-    does: "The pointed 'corner' tooth that grips and tears food.",
-    problems: ["Prominent or high-set canines", "Cavities near the gum", "Staining"],
-    treatments: [["Braces & aligners", "/services/braces-aligners/"], ["Teeth whitening", "/services/teeth-whitening/"]],
-  },
-  {
-    id: "incisor2-r",
-    name: "Upper right lateral incisor",
-    role: "Incisor",
-    does: "Cuts food and shapes the front of your smile.",
-    problems: ["Chips", "Gaps", "Discolouration"],
-    treatments: [["Teeth whitening", "/services/teeth-whitening/"], ["Crown", "/services/crowns-bridges/"]],
-  },
-  {
-    id: "incisor1-r",
-    name: "Upper right central incisor",
-    role: "Incisor",
-    does: "Bites into food; the most visible tooth in your smile.",
-    problems: ["Chips or trauma", "Gaps between front teeth", "Yellowing"],
-    treatments: [["Teeth whitening", "/services/teeth-whitening/"], ["Braces & aligners", "/services/braces-aligners/"]],
-  },
-  {
-    id: "incisor1-l",
-    name: "Upper left central incisor",
-    role: "Incisor",
-    does: "Bites into food; front-and-centre in your smile.",
-    problems: ["Chips or trauma", "Front gaps", "Staining"],
-    treatments: [["Teeth whitening", "/services/teeth-whitening/"], ["Braces & aligners", "/services/braces-aligners/"]],
-  },
-  {
-    id: "incisor2-l",
-    name: "Upper left lateral incisor",
-    role: "Incisor",
-    does: "Cuts food and frames the smile beside the central teeth.",
-    problems: ["Chips", "Gaps", "Discolouration"],
-    treatments: [["Teeth whitening", "/services/teeth-whitening/"], ["Crown", "/services/crowns-bridges/"]],
-  },
-  {
-    id: "canine-l",
-    name: "Upper left canine",
-    role: "Canine",
-    does: "The pointed corner tooth that grips and tears food.",
-    problems: ["High-set canines", "Cavities near the gum", "Staining"],
-    treatments: [["Braces & aligners", "/services/braces-aligners/"], ["Teeth whitening", "/services/teeth-whitening/"]],
-  },
-  {
-    id: "premolar1-l",
-    name: "Upper left first premolar",
-    role: "Premolar",
-    does: "Tears and crushes food; supports your smile's width.",
-    problems: ["Cavities", "Crowding", "Grinding wear"],
-    treatments: [["Braces & aligners", "/services/braces-aligners/"], ["Cleaning & check-up", "/services/teeth-cleaning-checkup/"]],
-  },
-];
+const INCISOR = {
+  role: "Incisor",
+  does: "Bites and cuts into food; the most visible teeth in your smile.",
+  problems: ["Chips or trauma", "Gaps between front teeth", "Yellowing / staining"],
+  treatments: [["Teeth whitening", "/services/teeth-whitening/"], ["Braces & aligners", "/services/braces-aligners/"], ["Crown", "/services/crowns-bridges/"]],
+};
+const CANINE = {
+  role: "Canine",
+  does: "The pointed 'corner' tooth that grips and tears food.",
+  problems: ["High-set or prominent canines", "Cavities near the gum", "Staining"],
+  treatments: [["Braces & aligners", "/services/braces-aligners/"], ["Teeth whitening", "/services/teeth-whitening/"]],
+};
+const PREMOLAR = {
+  role: "Premolar",
+  does: "Tears and crushes food and supports the width of your smile.",
+  problems: ["Cavities between teeth", "Old fillings that fail", "Crowding needing braces"],
+  treatments: [["Cleaning & check-up", "/services/teeth-cleaning-checkup/"], ["Braces & aligners", "/services/braces-aligners/"], ["Crown", "/services/crowns-bridges/"]],
+};
+const MOLAR = {
+  role: "Molar",
+  does: "Grinds and crushes food with its broad, cusped surface.",
+  problems: ["Deep pit-and-fissure cavities", "Cracks from hard chewing", "Infection reaching the nerve"],
+  treatments: [["Root canal", "/services/root-canal-treatment/"], ["Crown", "/services/crowns-bridges/"], ["Extraction", "/services/wisdom-tooth-extraction/"]],
+};
+
+const side = (name, dp) => ({ name, ...dp });
+
+export const TOOTH_INFO = {
+  t17: side("Upper right second molar", MOLAR),
+  t16: side("Upper right first molar", MOLAR),
+  t15: side("Upper right second premolar", PREMOLAR),
+  t14: side("Upper right first premolar", PREMOLAR),
+  t13: side("Upper right canine", CANINE),
+  t12: side("Upper right lateral incisor", INCISOR),
+  t11: side("Upper right central incisor", INCISOR),
+  t21: side("Upper left central incisor", INCISOR),
+  t22: side("Upper left lateral incisor", INCISOR),
+  t23: side("Upper left canine", CANINE),
+  t24: side("Upper left first premolar", PREMOLAR),
+  t25: side("Upper left second premolar", PREMOLAR),
+  t26: side("Upper left first molar", MOLAR),
+  t27: side("Upper left second molar", MOLAR),
+};
+
+// Left→right display order for the a11y <select> mirror.
+export const TOOTH_ORDER = ["t17", "t16", "t15", "t14", "t13", "t12", "t11", "t21", "t22", "t23", "t24", "t25", "t26", "t27"];

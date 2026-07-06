@@ -1,25 +1,27 @@
 // Experience B — scroll-scrubbed story: healthy → cavity → root canal → crown.
 // Driven by a GSAP ScrollTrigger timeline (passed in). Renders on demand.
 import * as THREE from "three";
-import { molarWithRoots, pulp, MATERIALS, setupStage } from "./tooth-factory.js";
+import { molarWithRoots, pulp, MATERIALS, applyStudioEnv } from "./tooth-factory.js";
 
-export function createDecayStory(THREE_, { stage, canvas, chapters, progressEl, gsap, ScrollTrigger, reducedMotion }) {
+export function createDecayStory(THREE_, { stage, canvas, chapters, progressEl, gsap, ScrollTrigger, reducedMotion, models }) {
   const scene = new THREE_.Scene();
   const camera = new THREE_.PerspectiveCamera(40, 1, 0.1, 100);
   camera.position.set(0, 0.3, 6.2);
   camera.lookAt(0, 0.1, 0);
-  setupStage(THREE_, scene);
 
   const renderer = new THREE_.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: "low-power" });
   renderer.setClearColor(0x000000, 0);
-  renderer.toneMapping = THREE_.ACESFilmicToneMapping;
   renderer.localClippingEnabled = true;
+  applyStudioEnv(THREE_, renderer, scene, { shadow: false });
 
   const group = new THREE_.Group();
   scene.add(group);
 
   const enamel = MATERIALS.enamel();
   const clipPlane = new THREE_.Plane(new THREE_.Vector3(-1, 0, 0), 1.2); // hidden initially (nothing clipped)
+  // Procedural cusped molar — its pulp/gutta cross-section is tuned to these exact
+  // dimensions, so the root-canal reveal stays aligned; physical enamel + studio env
+  // give it the same premium finish as the real-teeth arch.
   const tooth = new THREE_.Mesh(molarWithRoots(THREE_), enamel);
   group.add(tooth);
 

@@ -3,6 +3,7 @@
 // biting surface up (+Y), roots hanging down (-Y). Kept low-poly (<2k tris).
 
 import * as THREE from "three";
+import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
 
 // Rounded-box-ish crown by displacing a sphere toward a superellipse cross-section.
 function crownGeometry(THREE_, { width, depth, height, cusps }) {
@@ -127,24 +128,61 @@ export function pulp(THREE_ = THREE) {
   return mergeGeoms(THREE_, [chamber, c1, c2, c3]);
 }
 
+// Clean-and-realistic finish: bright enamel with a clearcoat sheen, fleshy gums.
 export const MATERIALS = {
-  enamel: () => new THREE.MeshStandardMaterial({ color: 0xf7f4ee, roughness: 0.35, metalness: 0.02 }),
-  enamelDull: () => new THREE.MeshStandardMaterial({ color: 0xe8e0cf, roughness: 0.6, metalness: 0.0 }),
-  gum: () => new THREE.MeshStandardMaterial({ color: 0xe88a8a, roughness: 0.7, metalness: 0.0 }),
-  pulp: () => new THREE.MeshStandardMaterial({ color: 0xd94141, roughness: 0.5, emissive: 0x3a0000, emissiveIntensity: 0.3 }),
-  gutta: () => new THREE.MeshStandardMaterial({ color: 0xe8913a, roughness: 0.5 }),
-  crown: () => new THREE.MeshStandardMaterial({ color: 0xf2f6fb, roughness: 0.18, metalness: 0.1 }),
-  decay: () => new THREE.MeshStandardMaterial({ color: 0x4a3222, roughness: 0.9 }),
+  enamel: () =>
+    new THREE.MeshPhysicalMaterial({ color: 0xf4efe2, roughness: 0.28, clearcoat: 0.6, clearcoatRoughness: 0.28, metalness: 0.0 }),
+  enamelDull: () =>
+    new THREE.MeshPhysicalMaterial({ color: 0xe6dcc6, roughness: 0.6, clearcoat: 0.2, metalness: 0.0 }),
+  gum: () =>
+    new THREE.MeshPhysicalMaterial({ color: 0xd97b7b, roughness: 0.55, sheen: 0.4, sheenColor: new THREE.Color(0xff9d9d), metalness: 0.0 }),
+  pulp: () =>
+    new THREE.MeshPhysicalMaterial({ color: 0xd94141, roughness: 0.5, emissive: 0x3a0000, emissiveIntensity: 0.3 }),
+  gutta: () => new THREE.MeshPhysicalMaterial({ color: 0xe8913a, roughness: 0.45 }),
+  crown: () => new THREE.MeshPhysicalMaterial({ color: 0xeef3fb, roughness: 0.15, clearcoat: 0.9, clearcoatRoughness: 0.1, metalness: 0.1 }),
+  decay: () => new THREE.MeshPhysicalMaterial({ color: 0x4a3222, roughness: 0.9 }),
+  metal: () => new THREE.MeshPhysicalMaterial({ color: 0xcfd6dd, roughness: 0.25, metalness: 1.0 }),
 };
 
-// Build the shared lighting + a soft floor into a scene.
+// Soft studio lighting via RoomEnvironment (image-based) + one key light + a cheap
+// canvas-texture contact shadow (no shadow-map cost — fits render-on-demand/low-power).
+export function applyStudioEnv(THREE_, renderer, scene, opts = {}) {
+  renderer.toneMapping = THREE_.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = opts.exposure ?? 1.1;
+  const pmrem = new THREE_.PMREMGenerator(renderer);
+  scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+  const key = new THREE_.DirectionalLight(0xffffff, 1.1);
+  key.position.set(3, 6, 4);
+  scene.add(key);
+  const fill = new THREE_.HemisphereLight(0xdff2ff, 0xf3e9df, 0.35);
+  scene.add(fill);
+  if (opts.shadow !== false) addContactShadow(THREE_, scene, opts.shadowY ?? -1.3, opts.shadowSize ?? 7);
+}
+
+function addContactShadow(THREE_, scene, y, size) {
+  const c = document.createElement("canvas");
+  c.width = c.height = 128;
+  const ctx = c.getContext("2d");
+  const g = ctx.createRadialGradient(64, 64, 4, 64, 64, 62);
+  g.addColorStop(0, "rgba(20,30,50,0.38)");
+  g.addColorStop(1, "rgba(20,30,50,0)");
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, 128, 128);
+  const tex = new THREE_.CanvasTexture(c);
+  const plane = new THREE_.Mesh(
+    new THREE_.PlaneGeometry(size, size),
+    new THREE_.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false })
+  );
+  plane.rotation.x = -Math.PI / 2;
+  plane.position.y = y;
+  scene.add(plane);
+}
+
+// Back-compat alias (older call sites); prefers applyStudioEnv going forward.
 export function setupStage(THREE_, scene) {
   const hemi = new THREE_.HemisphereLight(0xd9f6ef, 0xf3e9df, 1.0);
   scene.add(hemi);
-  const dir = new THREE_.DirectionalLight(0xffffff, 1.5);
+  const dir = new THREE_.DirectionalLight(0xffffff, 1.4);
   dir.position.set(3, 6, 4);
   scene.add(dir);
-  const dir2 = new THREE_.DirectionalLight(0xbfe1fe, 0.5);
-  dir2.position.set(-4, 2, -3);
-  scene.add(dir2);
 }
