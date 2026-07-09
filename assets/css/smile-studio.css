@@ -280,6 +280,21 @@ body.no-3d .tooth-select-label {
   box-shadow: var(--shadow-1);
 }
 
+/* model attribution */
+.studio-credit {
+  margin-top: 22px;
+  text-align: center;
+  font-size: 0.76rem;
+  color: var(--ink-3);
+}
+.studio-credit a {
+  color: var(--ink-3);
+  text-decoration: underline;
+}
+.studio-credit a:hover {
+  color: var(--blue-700);
+}
+
 @media (max-width: 880px) {
   .explorer-grid {
     grid-template-columns: 1fr;

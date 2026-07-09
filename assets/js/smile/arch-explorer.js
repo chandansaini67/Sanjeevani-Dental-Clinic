@@ -13,10 +13,13 @@ export function createArchExplorer(THREE_, { stage, canvas, infoEl, selectEl, mo
   renderer.setClearColor(0x000000, 0);
   applyStudioEnv(THREE_, renderer, scene, { shadowY: -2.6, shadowSize: 9 });
 
-  // Turntable group (spins around anatomical vertical); arch child is recentered below.
+  // Turntable group (spins around scene Y); arch child is recentered below.
   const group = new THREE_.Group();
   scene.add(group);
   const arch = new THREE_.Group();
+  // GLB anatomical axes: Z = vertical, Y = front-back. Stand the arch upright like a
+  // dental model — crowns up, roots seated down into the gum base.
+  arch.rotation.x = Math.PI / 2;
   group.add(arch);
 
   const enamel = MATERIALS.enamel();
@@ -54,25 +57,26 @@ export function createArchExplorer(THREE_, { stage, canvas, infoEl, selectEl, mo
       new THREE_.BoxGeometry(size.x, size.y, size.z),
       new THREE_.MeshBasicMaterial({ visible: false })
     );
-    proxy.position.copy(c);
+    proxy.position.copy(c); // world coords (post-recenter) → parent must be the identity group
     proxy.userData.name = mesh.name;
-    arch.add(proxy);
+    group.add(proxy);
     proxies.push(proxy);
   }
 
-  // Procedural gum ridge following the arch, seated at the root ends (hides raw root tips).
+  // Procedural gum base following the arch — roots sink into it, crowns emerge above.
+  const gumY = bb.min.y - center.y + 0.55;
   const gumCurvePts = meshes
     .map((m) => {
       const c = new THREE_.Vector3();
-      new THREE_.Box3().setFromObject(m).getCenter(c);
+      new THREE_.Box3().setFromObject(m).getCenter(c); // already post-recenter world coords
       return c;
     })
     .sort((a, b) => a.x - b.x)
-    .map((p) => new THREE_.Vector3(p.x, bb.max.y - center.y - 0.15, p.z));
+    .map((p) => new THREE_.Vector3(p.x, gumY, p.z));
   if (gumCurvePts.length > 3) {
     const curve = new THREE_.CatmullRomCurve3(gumCurvePts, false, "catmullrom", 0.4);
-    const gum = new THREE_.Mesh(new THREE_.TubeGeometry(curve, 64, 0.62, 12, false), MATERIALS.gum());
-    arch.add(gum);
+    const gum = new THREE_.Mesh(new THREE_.TubeGeometry(curve, 64, 0.78, 12, false), MATERIALS.gum());
+    group.add(gum);
   }
 
   const raycaster = new THREE_.Raycaster();

@@ -115,8 +115,8 @@ export function createDecayStory(THREE_, { stage, canvas, chapters, progressEl, 
     const rct = band(p, 0.5, 0.8);       // chapter 3
     const crown = band(p, 0.8, 1.0);     // chapter 4
     state.rot = p * Math.PI * 0.9;
-    state.decay = cavity;
-    state.dull = cavity;
+    state.decay = cavity * (1 - band(p, 0.5, 0.62)); // drilled away early in the RCT
+    state.dull = cavity * (1 - band(p, 0.58, 0.75)); // enamel brightens once cleaned
     // chapter 3: clip sweeps open (1.2→-0.2), pulp cleaned (red→grey), gutta fills bottom-up
     state.clip = crown > 0 ? -0.2 + crown * 1.4 : 1.2 - band(p, 0.5, 0.62) * 1.4;
     state.pulpRed = 1 - band(p, 0.58, 0.72);
