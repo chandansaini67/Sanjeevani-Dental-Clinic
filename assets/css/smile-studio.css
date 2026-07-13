@@ -153,53 +153,7 @@
   margin-top: 14px;
 }
 
-/* Experience B — pinned decay story */
-.story-wrap {
-  position: relative;
-}
-.story-stage-col .stage {
-  min-height: 60vh;
-}
-.story-caption {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 24px;
-  text-align: center;
-  padding-inline: 20px;
-  pointer-events: none;
-}
-.story-caption .card {
-  display: inline-block;
-  max-width: 520px;
-  text-align: left;
-  pointer-events: auto;
-}
-.story-chapter {
-  opacity: 0;
-  transition: opacity 0.4s ease;
-}
-.story-chapter.active {
-  opacity: 1;
-}
-.story-progress {
-  display: flex;
-  gap: 8px;
-  justify-content: center;
-  margin-top: 16px;
-}
-.story-progress span {
-  width: 34px;
-  height: 5px;
-  border-radius: 3px;
-  background: var(--line);
-  transition: background 0.3s ease;
-}
-.story-progress span.on {
-  background: var(--grad-brand);
-}
-
-/* Experience C — braces slider */
+/* Experience B — braces slider */
 .braces-slider-track {
   position: relative;
   margin: 22px auto 0;
@@ -301,8 +255,5 @@ body.no-3d .tooth-select-label {
   }
   .explorer-grid .stage {
     min-height: 360px;
-  }
-  .story-stage-col .stage {
-    min-height: 68vh;
   }
 }

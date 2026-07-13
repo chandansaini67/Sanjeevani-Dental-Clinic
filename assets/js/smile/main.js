@@ -67,32 +67,6 @@ function setup() {
     });
   });
 
-  lazyStage("#stage-story", async (THREE, stage) => {
-    // Read GSAP at intersection time — guaranteed present by then (scroll happens well
-    // after the deferred GSAP scripts run), independent of head script ordering.
-    const gsap = window.gsap;
-    const ScrollTrigger = window.ScrollTrigger;
-    if (gsap && ScrollTrigger) {
-      try {
-        gsap.registerPlugin(ScrollTrigger);
-      } catch (e) {}
-    }
-    const [{ createDecayStory }, models] = await Promise.all([
-      import("./decay-story.js"),
-      loadModels(THREE),
-    ]);
-    return createDecayStory(THREE, {
-      stage,
-      canvas: stage.querySelector("canvas"),
-      chapters: Array.from(document.querySelectorAll("[data-chapter]")),
-      progressEl: document.getElementById("story-progress"),
-      gsap,
-      ScrollTrigger,
-      reducedMotion,
-      models,
-    });
-  });
-
   lazyStage("#stage-braces", async (THREE, stage) => {
     const [{ createBracesMorph }, models] = await Promise.all([
       import("./braces-morph.js"),
