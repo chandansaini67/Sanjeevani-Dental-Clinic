@@ -21,7 +21,7 @@ propagate to pages (`tools/check-pages.mjs` enforces the critical strings).
 | MAPS place URL | https://www.google.com/maps/place/Sanjeevani+Dental+Clinic/@25.905683,93.7238305,17z/ |
 | REVIEW link | https://share.google/PbnuWCFHJTzjC2j3W |
 | INSTAGRAM | https://www.instagram.com/sanjeevani_dentalc |
-| RATING (honest) | 4.8★ · 33 Google reviews (as of 2026-07-04 — never claim 5.0) |
+| RATING (honest) | 4.8★ · 33 Google reviews (now LIVE — auto-updated, see below; never claim 5.0) |
 | STATS | 15+ years · 4 specialists · 5,000+ patients |
 | MAP EMBED | https://www.google.com/maps?q=Sanjeevani+Dental+Clinic+Jain+Temple+Road+Dimapur&output=embed |
 
@@ -100,6 +100,26 @@ JSON-LD (Google self-serving review policy).
 
 Every price table on the site carries: *"Indicative ranges for planning only. Your exact cost is
 confirmed in writing after examination, before any treatment begins."*
+
+## Live Google rating & review count (auto-updated)
+
+The rating/count shown sitewide (footer on all pages, home hero badge + reviews line, About chip,
+reviews page) is **live**, wired 2026-07-16:
+- Visible number sits in `<span data-gmb-rating>` / `<span data-gmb-count>` hooks; the HTML keeps a
+  static baseline ("4.8" / "33+") so it's always correct even before/without JS.
+- `assets/js/main.js` `initReviews()` fetches same-origin **`assets/data/reviews.json`** and paints
+  the hooks. No third-party call or CORS in the visitor's browser.
+- `reviews.json` is refreshed by the daily GitHub Action **`.github/workflows/refresh-reviews.yml`**,
+  which pulls from Featurable's public API (`https://api.featurable.com/api/v1/widgets/<ID>`,
+  server-side — Featurable blocks browser CORS) and only overwrites the file when it extracts a sane
+  rating (0<r≤5) + integer count (fail-safe otherwise).
+- **PENDING OWNER SETUP:** the repo variable `FEATURABLE_ID` is not set yet. Until then the Action
+  no-ops and the committed baseline (4.8 / 33) shows. To go live: owner creates a free Featurable
+  widget connected to the GBP → sends the widget ID → set it with `gh variable set FEATURABLE_ID`
+  (public ID, safe to store) → run the workflow once (`workflow_dispatch`) → confirm the jq field
+  paths match the real response (adjust in the workflow if Featurable's shape differs) and that
+  reviews.json + the live footer number match Google.
+- **No AggregateRating/Review JSON-LD** — visible text only (checker-enforced).
 
 ## Consistency fix-list (post-launch, owner actions — Claude provides steps)
 

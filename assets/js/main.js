@@ -13,6 +13,42 @@
     el.textContent = String(new Date().getFullYear());
   });
 
+  /* ---------- live Google rating & review count ----------
+     Reads a SAME-ORIGIN /assets/data/reviews.json that a daily GitHub Action refreshes
+     from the clinic's Google profile (via Featurable) — no third-party call or CORS in
+     the visitor's browser. The HTML ships a correct static baseline ("4.8" / "33+"), so
+     every page is right before JS runs and stays right if the fetch ever fails: no throw,
+     no console noise, no layout shift. Visible text only — NO AggregateRating schema
+     (Google's self-serving-review policy). */
+  (function initReviews() {
+    var ratingEls = document.querySelectorAll("[data-gmb-rating]");
+    var countEls = document.querySelectorAll("[data-gmb-count]");
+    if (!ratingEls.length && !countEls.length) return;
+
+    fetch("/assets/data/reviews.json", { cache: "no-cache" })
+      .then(function (res) {
+        return res.ok ? res.json() : null;
+      })
+      .then(function (data) {
+        if (!data) return;
+        var r = Number(data.rating);
+        var c = Math.round(Number(data.count));
+        if (r > 0 && r <= 5) {
+          ratingEls.forEach(function (el) {
+            el.textContent = (Math.round(r * 10) / 10).toFixed(1);
+          });
+        }
+        if (c > 0) {
+          countEls.forEach(function (el) {
+            el.textContent = String(c);
+          });
+        }
+      })
+      .catch(function () {
+        /* keep the baseline; nothing to do */
+      });
+  })();
+
   /* ---------- mobile nav ---------- */
   var toggle = document.getElementById("navToggle");
   var nav = document.getElementById("mainNav");

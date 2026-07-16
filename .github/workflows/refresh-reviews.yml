@@ -1,0 +1,77 @@
+name: Refresh Google review count
+
+# Pulls the clinic's live Google rating + review count from Featurable (server-side,
+# no CORS) and writes assets/data/reviews.json, which the site reads same-origin.
+# The Featurable widget ID is public, stored as the repo variable FEATURABLE_ID.
+# Fail-safe: the JSON is only overwritten when a sane rating (0<r<=5) and count (>0)
+# are extracted — a bad/empty response leaves the committed baseline untouched.
+
+on:
+  schedule:
+    - cron: "17 6 * * *" # daily ~06:17 UTC
+  workflow_dispatch: {} # allow manual runs from the Actions tab
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch & write review data
+        env:
+          FEATURABLE_ID: ${{ vars.FEATURABLE_ID }}
+        run: |
+          set -e
+          if [ -z "$FEATURABLE_ID" ]; then
+            echo "FEATURABLE_ID repo variable not set yet — skipping (baseline kept)."
+            exit 0
+          fi
+
+          resp="$(curl -s -m 20 "https://api.featurable.com/api/v1/widgets/$FEATURABLE_ID" || true)"
+          echo "Raw response (first 600 chars):"
+          echo "${resp:0:600}"
+
+          # Try several likely field paths; keep the first sane value.
+          rating="$(printf '%s' "$resp" | jq -r '
+            [ .averageRating, .rating, .summary.averageRating, .data.averageRating,
+              .widget.averageRating, .reviewSummary.averageRating, .review_summary.average_rating ]
+            | map(select(. != null)) | .[0] // empty' 2>/dev/null || true)"
+          count="$(printf '%s' "$resp" | jq -r '
+            [ .totalReviewCount, .reviewCount, .totalReviews, .summary.totalReviewCount,
+              .summary.reviewCount, .data.totalReviewCount, .widget.totalReviewCount,
+              .reviewSummary.totalReviewCount, .review_summary.total_review_count,
+              ( .reviews | if type=="array" then length else empty end ) ]
+            | map(select(. != null)) | .[0] // empty' 2>/dev/null || true)"
+
+          echo "Extracted rating=$rating count=$count"
+
+          # Validate: rating a number in (0,5], count a positive integer.
+          ok="$(printf '%s' "{\"r\":\"$rating\",\"c\":\"$count\"}" | jq -r '
+            (try (.r|tonumber) catch -1) as $r |
+            (try (.c|tonumber) catch -1) as $c |
+            if ($r > 0 and $r <= 5 and $c > 0 and ($c == ($c|floor))) then "yes" else "no" end')"
+
+          if [ "$ok" != "yes" ]; then
+            echo "::warning::Could not extract a valid rating/count — leaving reviews.json unchanged. Fix the jq paths against the raw response above."
+            exit 0
+          fi
+
+          today="$(date -u +%Y-%m-%d)"
+          printf '{ "rating": %s, "count": %s, "updated": "%s" }\n' "$rating" "$count" "$today" > assets/data/reviews.json
+          echo "Wrote assets/data/reviews.json:"
+          cat assets/data/reviews.json
+
+      - name: Commit if changed
+        run: |
+          if git diff --quiet -- assets/data/reviews.json; then
+            echo "No change in review data."
+            exit 0
+          fi
+          git config user.name "sanjeevani-reviews-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add assets/data/reviews.json
+          git commit -m "chore: refresh live Google review count [skip ci]"
+          git push
