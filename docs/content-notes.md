@@ -21,7 +21,7 @@ propagate to pages (`tools/check-pages.mjs` enforces the critical strings).
 | MAPS place URL | https://www.google.com/maps/place/Sanjeevani+Dental+Clinic/@25.905683,93.7238305,17z/ |
 | REVIEW link | https://share.google/PbnuWCFHJTzjC2j3W |
 | INSTAGRAM | https://www.instagram.com/sanjeevani_dentalc |
-| RATING (honest) | 4.8★ · 33 Google reviews (now LIVE — auto-updated, see below; never claim 5.0) |
+| RATING (honest) | 4.8★ · 39 Google reviews (as of 2026-07-16; served from reviews.json — see below; never claim 5.0) |
 | STATS | 15+ years · 4 specialists · 5,000+ patients |
 | MAP EMBED | https://www.google.com/maps?q=Sanjeevani+Dental+Clinic+Jain+Temple+Road+Dimapur&output=embed |
 
