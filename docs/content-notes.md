@@ -113,12 +113,12 @@ reviews page) is **live**, wired 2026-07-16:
   which pulls from Featurable's public API (`https://api.featurable.com/api/v1/widgets/<ID>`,
   server-side — Featurable blocks browser CORS) and only overwrites the file when it extracts a sane
   rating (0<r≤5) + integer count (fail-safe otherwise).
-- **PENDING OWNER SETUP:** the repo variable `FEATURABLE_ID` is not set yet. Until then the Action
-  no-ops and the committed baseline (4.8 / 33) shows. To go live: owner creates a free Featurable
-  widget connected to the GBP → sends the widget ID → set it with `gh variable set FEATURABLE_ID`
-  (public ID, safe to store) → run the workflow once (`workflow_dispatch`) → confirm the jq field
-  paths match the real response (adjust in the workflow if Featurable's shape differs) and that
-  reviews.json + the live footer number match Google.
+- **OWNER CHOSE OPTION A (2026-07-16): manual refresh, no auto-update.** The daily schedule in the
+  workflow is commented out; the number is updated on request by editing `assets/data/reviews.json`
+  (read the live figure from the GBP profile, e.g. share.google link, then commit). Current value:
+  4.8 / 39. To switch to Option B (hands-off auto-update): owner creates a free Featurable widget →
+  sends the public widget ID → `gh variable set FEATURABLE_ID` → re-enable the `schedule:` cron →
+  run once (`workflow_dispatch`) → confirm the jq field paths match Featurable's real response.
 - **No AggregateRating/Review JSON-LD** — visible text only (checker-enforced).
 
 ## Consistency fix-list (post-launch, owner actions — Claude provides steps)

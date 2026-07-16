@@ -5,11 +5,16 @@ name: Refresh Google review count
 # The Featurable widget ID is public, stored as the repo variable FEATURABLE_ID.
 # Fail-safe: the JSON is only overwritten when a sane rating (0<r<=5) and count (>0)
 # are extracted — a bad/empty response leaves the committed baseline untouched.
+#
+# STATUS: manual-only. Owner chose to refresh the count on request (Option A), so the
+# daily schedule is disabled. To switch to hands-off auto-update (Option B): create a
+# free Featurable widget for the clinic's Google profile, set the repo variable
+# FEATURABLE_ID to its widget ID, and re-enable the `schedule:` cron below.
 
 on:
-  schedule:
-    - cron: "17 6 * * *" # daily ~06:17 UTC
-  workflow_dispatch: {} # allow manual runs from the Actions tab
+  # schedule:
+  #   - cron: "17 6 * * *" # daily ~06:17 UTC — re-enable for Option B (auto-update)
+  workflow_dispatch: {} # run manually from the Actions tab
 
 permissions:
   contents: write
